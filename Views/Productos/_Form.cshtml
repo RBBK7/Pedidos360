@@ -1,0 +1,71 @@
+@model ProductoFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+@if (!Model.Categorias.Any())
+{
+    <div class="alert alert-warning">
+        No hay categorías registradas. 
+        <a asp-controller="Categorias" asp-action="Create">Crear una categoría</a> antes de agregar productos.
+    </div>
+}
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <label asp-for="Producto.Nombre" class="form-label"></label>
+        <input asp-for="Producto.Nombre" class="form-control" placeholder="Nombre del producto" />
+        <span asp-validation-for="Producto.Nombre" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Producto.CategoriaId" class="form-label"></label>
+        <select asp-for="Producto.CategoriaId" asp-items="Model.Categorias" class="form-select">
+            <option value="">Seleccione categoría</option>
+        </select>
+        <span asp-validation-for="Producto.CategoriaId" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Producto.Precio" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text">₡</span>
+            <input asp-for="Producto.Precio" class="form-control" placeholder="0.00" />
+        </div>
+        <span asp-validation-for="Producto.Precio" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Producto.ImpuestoPorc" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="Producto.ImpuestoPorc" class="form-control" placeholder="13" />
+            <span class="input-group-text">%</span>
+        </div>
+        <span asp-validation-for="Producto.ImpuestoPorc" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Producto.Stock" class="form-label"></label>
+        <input asp-for="Producto.Stock" class="form-control" placeholder="0" />
+        <span asp-validation-for="Producto.Stock" class="text-danger small"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Producto.ImagenUrl" class="form-label"></label>
+        @if (!string.IsNullOrEmpty(Model.Producto.ImagenUrl))
+        {
+            <div class="mb-2">
+                <img src="@Model.Producto.ImagenUrl" alt="Imagen actual"
+                     class="rounded border" style="height:80px;object-fit:cover;" />
+                <span class="text-muted small ms-2">Imagen actual</span>
+            </div>
+        }
+        <input type="file" name="imagenFile" class="form-control" accept="image/*" />
+        <input type="hidden" asp-for="Producto.ImagenUrl" />
+        <span asp-validation-for="Producto.ImagenUrl" class="text-danger small"></span>
+        <div class="form-text">Formatos: JPG, PNG, WEBP. En edición solo es necesario si desea cambiarla.</div>
+    </div>
+
+    <div class="col-12">
+        <div class="form-check">
+            <input asp-for="Producto.Activo" class="form-check-input" />
+            <label asp-for="Producto.Activo" class="form-check-label"></label>
+        </div>
+    </div>
+</div>

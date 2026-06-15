@@ -1,0 +1,144 @@
+@model HomeDashboardViewModel
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="mb-4">
+    <h1 class="h3">Bienvenido a Pedidos360</h1>
+    <p class="text-muted">Sistema de inventario y pedidos</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="fs-1 text-primary">🏷️</div>
+                <div class="fs-2 fw-bold">@Model.TotalCategorias</div>
+                <div class="text-muted small">Categorías</div>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+                <a asp-controller="Categorias" asp-action="Index" class="btn btn-sm btn-outline-primary">Ver categorías</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="fs-1 text-success">📦</div>
+                <div class="fs-2 fw-bold">@Model.TotalProductos</div>
+                <div class="text-muted small">Productos (@Model.ProductosActivos activos)</div>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+                <a asp-controller="Productos" asp-action="Index" class="btn btn-sm btn-outline-success">Ver productos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="fs-1 text-warning">👥</div>
+                <div class="fs-2 fw-bold">@Model.TotalClientes</div>
+                <div class="text-muted small">Clientes</div>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+                <a asp-controller="Clientes" asp-action="Index" class="btn btn-sm btn-outline-warning">Ver clientes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="fs-1 text-secondary">🛒</div>
+                <div class="fs-2 fw-bold text-muted">—</div>
+                <div class="text-muted small">Pedidos (Hito 2)</div>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+                <span class="badge bg-secondary">hito2</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-transparent fw-semibold">
+        Guía de Inicio Rápido
+    </div>
+    <div class="card-body p-0">
+        <div class="accordion accordion-flush" id="acordeonGuia">
+
+            <!-- Paso 1 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#paso1">
+                        <span class="badge bg-primary me-2">1</span>
+                        Registra tus Categorías
+                    </button>
+                </h2>
+                <div id="paso1" class="accordion-collapse collapse show"
+                     data-bs-parent="#acordeonGuia">
+                    <div class="accordion-body text-muted">
+                        Antes de agregar productos, crea las categorías necesarias.
+                        Ve a <strong>Categorías → Nuevo</strong> e ingresa el nombre y descripción
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 2 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#paso2">
+                        <span class="badge bg-primary me-2">2</span>
+                        Agrega tus Productos
+                    </button>
+                </h2>
+                <div id="paso2" class="accordion-collapse collapse"
+                     data-bs-parent="#acordeonGuia">
+                    <div class="accordion-body text-muted">
+                        Con las categorías listas, ve a <strong>Productos → Nuevo</strong>.
+                        Completa el nombre, precio, stock e imagen. Asegúrate de asignar una categoría
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 3 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#paso3">
+                        <span class="badge bg-primary me-2">3</span>
+                        Registra tus Clientes
+                    </button>
+                </h2>
+                <div id="paso3" class="accordion-collapse collapse"
+                     data-bs-parent="#acordeonGuia">
+                    <div class="accordion-body text-muted">
+                        Ve a <strong>Clientes → Nuevo</strong> e ingresa los datos del cliente:
+                        nombre, cédula, teléfono y correo. Puedes buscarlos después por nombre o cédula
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 4 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#paso4">
+                        <span class="badge bg-primary me-2">4</span>
+                        Crea un Pedido
+                    </button>
+                </h2>
+                <div id="paso4" class="accordion-collapse collapse"
+                     data-bs-parent="#acordeonGuia">
+                    <div class="accordion-body text-muted">
+                        Con clientes y productos registrados, ya puedes generar pedidos.
+                        Selecciona el cliente, agrega los productos y confirma el pedido.
+                        <span class="badge bg-warning text-dark ms-1">Hito2</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

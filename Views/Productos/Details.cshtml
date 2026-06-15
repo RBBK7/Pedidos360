@@ -1,0 +1,44 @@
+@model Producto
+@{
+    ViewData["Title"] = "Detalle Producto";
+}
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Volver</a>
+    <h1 class="h4 mb-0">Detalle Producto</h1>
+</div>
+
+<div class="card border-0 shadow-sm" style="max-width:650px">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-auto">
+                <img src="@Model.ImagenUrl" alt="@Model.Nombre"
+                     class="rounded border" style="width:120px;height:120px;object-fit:cover;"
+                     onerror="this.src='/uploads/productos/placeholder.png'" />
+            </div>
+            <div class="col">
+                <h5 class="fw-bold">@Model.Nombre</h5>
+                <span class="badge @(Model.Activo ? "bg-success" : "bg-secondary")">
+                    @(Model.Activo ? "Activo" : "Inactivo")
+                </span>
+            </div>
+        </div>
+        <hr />
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Categoría</dt>
+            <dd class="col-sm-8">@Model.Categoria?.Nombre</dd>
+            <dt class="col-sm-4">Precio</dt>
+            <dd class="col-sm-8">@Model.Precio.ToString("C")</dd>
+            <dt class="col-sm-4">Impuesto</dt>
+            <dd class="col-sm-8">@Model.ImpuestoPorc%</dd>
+            <dt class="col-sm-4">Precio con IVA</dt>
+            <dd class="col-sm-8">@((Model.Precio * (1 + Model.ImpuestoPorc / 100)).ToString("C"))</dd>
+            <dt class="col-sm-4">Stock</dt>
+            <dd class="col-sm-8">@Model.Stock unidades</dd>
+        </dl>
+    </div>
+    <div class="card-footer bg-transparent d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">Editar</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Eliminar</a>
+    </div>
+</div>

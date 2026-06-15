@@ -1,0 +1,88 @@
+@model ClienteIndexViewModel
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-1">Clientes</h1>
+        <p class="text-muted mb-0">Directorio de clientes B2B.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Nuevo cliente</a>
+</div>
+
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2">
+        <form method="get" asp-action="Index" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label form-label-sm mb-1">Buscar por nombre o cédula</label>
+                <input type="text" name="busqueda" value="@Model.BusquedaFiltro"
+                       class="form-control form-control-sm"
+                       placeholder="Ej: Tech Solutions o 3-101-..." />
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-outline-primary w-100">Buscar</button>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary w-100">Limpiar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cédula / Jurídica</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Clientes)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.Cedula</td>
+                    <td><a href="mailto:@item.Correo">@item.Correo</a></td>
+                    <td>@item.Telefono</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Clientes.Any())
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">No se encontraron clientes.</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.Clientes.PageCount > 1)
+    {
+        <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                Mostrando @Model.Clientes.FirstItemOnPage–@Model.Clientes.LastItemOnPage
+                de @Model.Clientes.TotalItemCount clientes
+            </small>
+            @Html.PagedListPager(Model.Clientes, page => Url.Action("Index", new
+            {
+                page,
+                busqueda = Model.BusquedaFiltro
+            }), new X.PagedList.Mvc.Core.PagedListRenderOptions
+            {
+                LiElementClasses = new[] { "page-item" },
+                PageClasses      = new[] { "page-link" },
+                UlElementClasses = new[] { "pagination pagination-sm mb-0" }
+            })
+        </div>
+    }
+</div>

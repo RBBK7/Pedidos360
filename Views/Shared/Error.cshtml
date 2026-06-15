@@ -1,0 +1,15 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="text-center py-5">
+    <h1 class="display-1 text-danger">⚠</h1>
+    <h2>Ocurrió un error inesperado</h2>
+    <p class="text-muted">Lo sentimos, algo salió mal. Por favor intente de nuevo.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="small text-muted">Request ID: <code>@Model.RequestId</code></p>
+    }
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Volver al inicio</a>
+</div>

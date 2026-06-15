@@ -1,0 +1,20 @@
+/* Pedidos360 - Site styles */
+
+.footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Tabla con sombra suave */
+.card .table thead th {
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #6c757d;
+}
+
+/* Imagen placeholder cuando falla la carga */
+img[onerror] {
+    background: #f8f9fa;
+}
