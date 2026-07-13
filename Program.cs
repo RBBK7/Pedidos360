@@ -1,10 +1,17 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Pedidos360.Data;
-using Microsoft.AspNetCore.Identity;
+using QuestPDF.Infrastructure;
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+// Los fetch() de Pedidos/Create envían el token antifalsificación por header en vez de campo de form
+builder.Services.AddAntiforgery(options => options.HeaderName = "RequestVerificationToken");
 
 builder.Services.AddDbContext<Pedidos360Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Pedidos360")));
@@ -29,8 +36,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-
-
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
@@ -41,6 +46,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 app.MapRazorPages();
 
 app.Run();
