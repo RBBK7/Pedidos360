@@ -4,9 +4,10 @@ using Pedidos360.Data;
 using Pedidos360.Models;
 using Pedidos360.ViewModels;
 using X.PagedList.Extensions;
-
+using Microsoft.AspNetCore.Authorization;
 namespace Pedidos360.Controllers;
 
+[Authorize]
 public class ClientesController : Controller
 {
     private readonly Pedidos360Context _context;
@@ -18,6 +19,7 @@ public class ClientesController : Controller
     }
 
 
+    [Authorize(Roles = "Admin,Ventas")]
     public async Task<IActionResult> Index(string? busqueda, int page = 1)
     {
         var query = _context.Clientes.AsQueryable();
@@ -38,6 +40,7 @@ public class ClientesController : Controller
         return View(viewModel);
     }
 
+    [Authorize(Roles = "Admin,Ventas")]
     public async Task<IActionResult> Details(int? id)
     {
         if (id is null) return NotFound();
@@ -49,11 +52,13 @@ public class ClientesController : Controller
     }
 
 
+    [Authorize(Roles = "Admin,Ventas")]
     public IActionResult Create()
     {
         return View(new Cliente());
     }
 
+    [Authorize(Roles = "Admin,Ventas")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Cliente cliente)
@@ -73,6 +78,7 @@ public class ClientesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Roles = "Admin,Ventas")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id is null) return NotFound();
@@ -84,6 +90,7 @@ public class ClientesController : Controller
     }
 
 
+    [Authorize(Roles = "Admin,Ventas")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Cliente cliente)
@@ -114,6 +121,7 @@ public class ClientesController : Controller
     }
 
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id is null) return NotFound();
@@ -124,6 +132,7 @@ public class ClientesController : Controller
         return View(cliente);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)

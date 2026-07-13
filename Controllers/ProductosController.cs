@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,8 @@ using Pedidos360.ViewModels;
 using X.PagedList.Extensions;
 
 namespace Pedidos360.Controllers;
+
+[Authorize]
 
 public class ProductosController : Controller
 {
@@ -20,7 +23,7 @@ public class ProductosController : Controller
         _env = env;
     }
 
-
+    [Authorize(Roles ="Admin,Ventas,Operaciones")]
     public async Task<IActionResult> Index(string? nombre, int? categoriaId, int page = 1)
     {
         var query = _context.Productos
@@ -47,6 +50,7 @@ public class ProductosController : Controller
     }
 
 
+    [Authorize(Roles = "Admin,Ventas,Operaciones")]
     public async Task<IActionResult> Details(int? id)
     {
         if (id is null) return NotFound();
@@ -61,11 +65,12 @@ public class ProductosController : Controller
     }
 
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {
         return View(await BuildFormViewModelAsync(new Producto { Activo = true }));
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ProductoFormViewModel viewModel, IFormFile? imagenFile)
@@ -95,6 +100,7 @@ public class ProductosController : Controller
     }
 
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id is null) return NotFound();
@@ -105,6 +111,7 @@ public class ProductosController : Controller
         return View(await BuildFormViewModelAsync(producto));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, ProductoFormViewModel viewModel, IFormFile? imagenFile)
@@ -141,6 +148,7 @@ public class ProductosController : Controller
     }
 
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id is null) return NotFound();
@@ -155,6 +163,7 @@ public class ProductosController : Controller
     }
 
 
+    [Authorize(Roles = "Admin")]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)

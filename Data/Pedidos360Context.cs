@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Pedidos360.Models;
 
 namespace Pedidos360.Data;
 
-public partial class Pedidos360Context : DbContext
+public partial class Pedidos360Context : IdentityDbContext
 {
     public Pedidos360Context(DbContextOptions<Pedidos360Context> options)
         : base(options)
@@ -16,6 +17,7 @@ public partial class Pedidos360Context : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         // ── Categoria 
         modelBuilder.Entity<Categoria>(entity =>
         {
