@@ -11,7 +11,6 @@
     <a class="btn btn-primary" asp-action="Create">Nuevo cliente</a>
 </div>
 
-
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body py-2">
         <form method="get" asp-action="Index" class="row g-2 align-items-end">
@@ -19,7 +18,7 @@
                 <label class="form-label form-label-sm mb-1">Buscar por nombre o cédula</label>
                 <input type="text" name="busqueda" value="@Model.BusquedaFiltro"
                        class="form-control form-control-sm"
-                       placeholder="Ej: Tech Solutions o 3-101-..." />
+                       placeholder="Ej: Ana Rojas o 1-1890-..." />
             </div>
             <div class="col-md-3 d-flex gap-2">
                 <button type="submit" class="btn btn-sm btn-outline-primary w-100">Buscar</button>
@@ -42,26 +41,26 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Clientes)
-            {
-                <tr>
-                    <td>@item.Nombre</td>
-                    <td>@item.Cedula</td>
-                    <td><a href="mailto:@item.Correo">@item.Correo</a></td>
-                    <td>@item.Telefono</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-                    </td>
-                </tr>
-            }
-            @if (!Model.Clientes.Any())
-            {
-                <tr>
-                    <td colspan="5" class="text-center text-muted py-4">No se encontraron clientes.</td>
-                </tr>
-            }
+                @foreach (var item in Model.Clientes)
+                {
+                    <tr>
+                        <td>@item.NombreCompleto</td>
+                        <td>@item.Cedula</td>
+                        <td><a href="mailto:@item.Correo">@item.Correo</a></td>
+                        <td>@item.Telefono</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Cedula">Ver</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Cedula">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Cedula">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Clientes.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No se encontraron clientes.</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
@@ -80,7 +79,7 @@
             }), new X.PagedList.Mvc.Core.PagedListRenderOptions
             {
                 LiElementClasses = new[] { "page-item" },
-                PageClasses      = new[] { "page-link" },
+                PageClasses = new[] { "page-link" },
                 UlElementClasses = new[] { "pagination pagination-sm mb-0" }
             })
         </div>

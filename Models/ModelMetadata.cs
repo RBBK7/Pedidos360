@@ -54,7 +54,7 @@ public class ProductoMetadata
     [Required(ErrorMessage = "La imagen es requerida.")]
     [StringLength(500)]
     [Display(Name = "Imagen")]
-    public string ImagenUrl { get; set; } = string.Empty;
+    public string Imagen { get; set; } = string.Empty;
 
     [Display(Name = "Activo")]
     public bool Activo { get; set; }

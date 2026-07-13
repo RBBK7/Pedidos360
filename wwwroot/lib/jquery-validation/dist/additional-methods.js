@@ -338,10 +338,7 @@ $.validator.addMethod( "cnhBR", function( value ) {
 
 }, "Please specify a valid CNH number." );
 
-/*
- * Brazillian value number (Cadastrado de Pessoas Juridica).
- * value numbers have 14 digits in total: 12 numbers followed by 2 check numbers that are being used for validation.
- */
+
 $.validator.addMethod( "cnpjBR", function( value, element ) {
 	"use strict";
 

@@ -10,7 +10,6 @@ using X.PagedList.Extensions;
 namespace Pedidos360.Controllers;
 
 [Authorize]
-
 public class ProductosController : Controller
 {
     private readonly Pedidos360Context _context;
@@ -23,11 +22,13 @@ public class ProductosController : Controller
         _env = env;
     }
 
-    [Authorize(Roles ="Admin,Ventas,Operaciones")]
+
+    [Authorize(Roles = "Admin,Ventas,Operaciones")]
     public async Task<IActionResult> Index(string? nombre, int? categoriaId, int page = 1)
     {
         var query = _context.Productos
             .Include(p => p.Categoria)
+            .Include(p => p.Estado)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(nombre))
@@ -40,10 +41,10 @@ public class ProductosController : Controller
 
         var viewModel = new ProductoIndexViewModel
         {
-            Productos      = query.ToPagedList(page, PageSize),
-            NombreFiltro   = nombre,
-            CategoriaFiltro= categoriaId,
-            Categorias     = await BuildCategoriasSelectAsync()
+            Productos = query.ToPagedList(page, PageSize),
+            NombreFiltro = nombre,
+            CategoriaFiltro = categoriaId,
+            Categorias = await BuildCategoriasSelectAsync()
         };
 
         return View(viewModel);
@@ -57,6 +58,7 @@ public class ProductosController : Controller
 
         var producto = await _context.Productos
             .Include(p => p.Categoria)
+            .Include(p => p.Estado)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (producto is null) return NotFound();
@@ -68,8 +70,11 @@ public class ProductosController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {
-        return View(await BuildFormViewModelAsync(new Producto { Activo = true }));
+        var estadoActivo = await _context.Estados.FirstOrDefaultAsync(e => e.Descripcion == "Activo");
+        var producto = new Producto { EstadoId = estadoActivo?.Id ?? 0 };
+        return View(await BuildFormViewModelAsync(producto));
     }
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -82,12 +87,12 @@ public class ProductosController : Controller
         // Procesar imagen subida
         if (imagenFile is not null && imagenFile.Length > 0)
         {
-            viewModel.Producto.ImagenUrl = await GuardarImagenAsync(imagenFile);
-            ModelState.Remove("Producto.ImagenUrl");
+            viewModel.Producto.Imagen = await GuardarImagenAsync(imagenFile);
+            ModelState.Remove("Producto.Imagen");
         }
-        else if (string.IsNullOrWhiteSpace(viewModel.Producto.ImagenUrl))
+        else if (string.IsNullOrWhiteSpace(viewModel.Producto.Imagen))
         {
-            ModelState.AddModelError("Producto.ImagenUrl", "La imagen es obligatoria al crear el producto.");
+            ModelState.AddModelError("Producto.Imagen", "La imagen es obligatoria al crear el producto.");
         }
 
         if (!ModelState.IsValid)
@@ -121,8 +126,8 @@ public class ProductosController : Controller
         // Procesar imagen nueva 
         if (imagenFile is not null && imagenFile.Length > 0)
         {
-            viewModel.Producto.ImagenUrl = await GuardarImagenAsync(imagenFile);
-            ModelState.Remove("Producto.ImagenUrl");
+            viewModel.Producto.Imagen = await GuardarImagenAsync(imagenFile);
+            ModelState.Remove("Producto.Imagen");
         }
 
         if (!ModelState.IsValid)
@@ -131,16 +136,16 @@ public class ProductosController : Controller
         var productoDB = await _context.Productos.FindAsync(id);
         if (productoDB is null) return NotFound();
 
-        productoDB.Nombre       = viewModel.Producto.Nombre;
-        productoDB.CategoriaId  = viewModel.Producto.CategoriaId;
-        productoDB.Precio       = viewModel.Producto.Precio;
+        productoDB.Nombre = viewModel.Producto.Nombre;
+        productoDB.CategoriaId = viewModel.Producto.CategoriaId;
+        productoDB.Precio = viewModel.Producto.Precio;
         productoDB.ImpuestoPorc = viewModel.Producto.ImpuestoPorc;
-        productoDB.Stock        = viewModel.Producto.Stock;
-        productoDB.Activo       = viewModel.Producto.Activo;
+        productoDB.Stock = viewModel.Producto.Stock;
+        productoDB.EstadoId = viewModel.Producto.EstadoId;
 
-        // Solo actualizar imagen si se subió una nueva
-        if (!string.IsNullOrWhiteSpace(viewModel.Producto.ImagenUrl))
-            productoDB.ImagenUrl = viewModel.Producto.ImagenUrl;
+        // Solo actualizar imagen si se subio una nueva
+        if (!string.IsNullOrWhiteSpace(viewModel.Producto.Imagen))
+            productoDB.Imagen = viewModel.Producto.Imagen;
 
         await _context.SaveChangesAsync();
         TempData["SuccessMessage"] = $"Producto \"{productoDB.Nombre}\" actualizado correctamente.";
@@ -184,8 +189,9 @@ public class ProductosController : Controller
     {
         return new ProductoFormViewModel
         {
-            Producto   = producto,
-            Categorias = await BuildCategoriasSelectAsync()
+            Producto = producto,
+            Categorias = await BuildCategoriasSelectAsync(),
+            Estados = await BuildEstadosSelectAsync()
         };
     }
 
@@ -197,15 +203,23 @@ public class ProductosController : Controller
             .ToListAsync();
     }
 
-    /// Guarda el archivo en wwwroot/uploads/productos 
+    private async Task<List<SelectListItem>> BuildEstadosSelectAsync()
+    {
+        return await _context.Estados
+            .OrderBy(e => e.Descripcion)
+            .Select(e => new SelectListItem { Value = e.Id.ToString(), Text = e.Descripcion })
+            .ToListAsync();
+    }
+
+    // Guarda el archivo en wwwroot/uploads/productos 
     private async Task<string> GuardarImagenAsync(IFormFile file)
     {
         var uploadPath = Path.Combine(_env.WebRootPath, "uploads", "productos");
         Directory.CreateDirectory(uploadPath);
 
         var extension = Path.GetExtension(file.FileName);
-        var fileName  = $"{Guid.NewGuid()}{extension}";
-        var fullPath  = Path.Combine(uploadPath, fileName);
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var fullPath = Path.Combine(uploadPath, fileName);
 
         await using var stream = new FileStream(fullPath, FileMode.Create);
         await file.CopyToAsync(stream);

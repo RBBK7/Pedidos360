@@ -1,0 +1,142 @@
+@model Pedido
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = $"Pedido #{Model.Id}";
+    var estadosPedido = ViewBag.EstadosPedido as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Volver</a>
+    <h1 class="h4 mb-0">Pedido #@Model.Id</h1>
+
+    <div class="d-flex align-items-center gap-2 ms-2">
+        <label for="selectEstadoPedido" class="form-label mb-0 small text-muted">Estado:</label>
+        <select id="selectEstadoPedido" class="form-select form-select-sm" style="width:auto" data-pedido-id="@Model.Id">
+            @foreach (var estado in estadosPedido)
+            {
+                if (estado.Value == Model.EstadoId.ToString())
+                {
+                    <option value="@estado.Value" selected="selected">@estado.Text</option>
+                }
+                else
+                {
+                    <option value="@estado.Value">@estado.Text</option>
+                }
+            }
+        </select>
+        <span id="estadoGuardadoMsg" class="text-success small d-none">Guardado ✓</span>
+    </div>
+
+    <a class="btn btn-outline-primary btn-sm ms-auto" asp-action="ExportarPdf" asp-route-id="@Model.Id">
+        Exportar PDF
+    </a>
+</div>
+
+@Html.AntiForgeryToken()
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small mb-2">Cliente</h6>
+                <p class="mb-1 fw-semibold">@Model.Cliente?.Nombre @Model.Cliente?.ApellidoPaterno @Model.Cliente?.ApellidoMaterno</p>
+                <p class="mb-0 text-muted small">Cédula: @Model.ClienteId</p>
+                <hr />
+                <h6 class="text-muted text-uppercase small mb-2">Fecha</h6>
+                <p class="mb-0">@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mt-3">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small mb-3">Totales</h6>
+                <dl class="row mb-0">
+                    <dt class="col-7">Subtotal</dt>
+                    <dd class="col-5 text-end">@Model.Subtotal.ToString("C")</dd>
+                    <dt class="col-7">Descuento</dt>
+                    <dd class="col-5 text-end">-@Model.Descuento.ToString("C")</dd>
+                    <dt class="col-7">Impuesto</dt>
+                    <dd class="col-5 text-end">@Model.Impuesto.ToString("C")</dd>
+                    <dt class="col-7 fw-bold border-top pt-2">Total</dt>
+                    <dd class="col-5 text-end fw-bold border-top pt-2">@Model.Total.ToString("C")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-center">Cant.</th>
+                            <th class="text-end">Precio unit.</th>
+                            <th class="text-center">Desc. %</th>
+                            <th class="text-center">IVA %</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var d in Model.Detalles)
+                    {
+                        <tr>
+                            <td>@d.Producto?.Nombre</td>
+                            <td class="text-center">@d.Cantidad</td>
+                            <td class="text-end">@d.PrecioUnitario.ToString("C")</td>
+                            <td class="text-center">@d.DescuentoPorc%</td>
+                            <td class="text-center">@d.ImpuestoPorc%</td>
+                            <td class="text-end fw-semibold">@d.TotalLinea.ToString("C")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            const select = document.getElementById('selectEstadoPedido');
+            const msg = document.getElementById('estadoGuardadoMsg');
+            let valorAnterior = select.value;
+
+            select.addEventListener('change', function () {
+                const pedidoId = select.dataset.pedidoId;
+                const estadoId = select.value;
+
+                select.disabled = true;
+                msg.classList.add('d-none');
+
+                fetch('@Url.Action("CambiarEstado", "Pedidos")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': token
+                    },
+                    body: `id=${encodeURIComponent(pedidoId)}&estadoId=${encodeURIComponent(estadoId)}`
+                })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('No se pudo actualizar el estado del pedido.');
+                    return r.json();
+                })
+                .then(function () {
+                    valorAnterior = estadoId;
+                    msg.classList.remove('d-none');
+                    setTimeout(() => msg.classList.add('d-none'), 2000);
+                })
+                .catch(function (err) {
+                    alert(err.message || 'Ocurrió un error al actualizar el estado.');
+                    select.value = valorAnterior;
+                })
+                .finally(function () {
+                    select.disabled = false;
+                });
+            });
+        });
+    </script>
+}

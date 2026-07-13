@@ -14,9 +14,13 @@ public partial class Producto
 
     public int Stock { get; set; }
 
-    public string ImagenUrl { get; set; } = null!;
+    public string Imagen { get; set; } = null!;
 
-    public bool Activo { get; set; }
+    public int EstadoId { get; set; }
 
     public virtual Categoria? Categoria { get; set; }
+
+    public virtual Estado? Estado { get; set; }
+
+    public virtual ICollection<DetallePedido> DetallesPedido { get; set; } = [];
 }

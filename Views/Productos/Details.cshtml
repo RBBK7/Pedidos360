@@ -12,14 +12,14 @@
     <div class="card-body">
         <div class="row g-3">
             <div class="col-auto">
-                <img src="@Model.ImagenUrl" alt="@Model.Nombre"
+                <img src="@Model.Imagen" alt="@Model.Nombre"
                      class="rounded border" style="width:120px;height:120px;object-fit:cover;"
                      onerror="this.src='/uploads/productos/placeholder.png'" />
             </div>
             <div class="col">
                 <h5 class="fw-bold">@Model.Nombre</h5>
-                <span class="badge @(Model.Activo ? "bg-success" : "bg-secondary")">
-                    @(Model.Activo ? "Activo" : "Inactivo")
+                <span class="badge @(Model.Estado?.Descripcion == "Activo" ? "bg-success" : "bg-secondary")">
+                    @(Model.Estado?.Descripcion ?? "Sin estado")
                 </span>
             </div>
         </div>

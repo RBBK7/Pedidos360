@@ -5,7 +5,7 @@
 @if (!Model.Categorias.Any())
 {
     <div class="alert alert-warning">
-        No hay categorías registradas. 
+        No hay categorías registradas.
         <a asp-controller="Categorias" asp-action="Create">Crear una categoría</a> antes de agregar productos.
     </div>
 }
@@ -47,25 +47,26 @@
     </div>
 
     <div class="col-12">
-        <label asp-for="Producto.ImagenUrl" class="form-label"></label>
-        @if (!string.IsNullOrEmpty(Model.Producto.ImagenUrl))
+        <label asp-for="Producto.Imagen" class="form-label"></label>
+        @if (!string.IsNullOrEmpty(Model.Producto.Imagen))
         {
             <div class="mb-2">
-                <img src="@Model.Producto.ImagenUrl" alt="Imagen actual"
+                <img src="@Model.Producto.Imagen" alt="Imagen actual"
                      class="rounded border" style="height:80px;object-fit:cover;" />
                 <span class="text-muted small ms-2">Imagen actual</span>
             </div>
         }
         <input type="file" name="imagenFile" class="form-control" accept="image/*" />
-        <input type="hidden" asp-for="Producto.ImagenUrl" />
-        <span asp-validation-for="Producto.ImagenUrl" class="text-danger small"></span>
+        <input type="hidden" asp-for="Producto.Imagen" />
+        <span asp-validation-for="Producto.Imagen" class="text-danger small"></span>
         <div class="form-text">Formatos: JPG, PNG, WEBP. En edición solo es necesario si desea cambiarla.</div>
     </div>
 
-    <div class="col-12">
-        <div class="form-check">
-            <input asp-for="Producto.Activo" class="form-check-input" />
-            <label asp-for="Producto.Activo" class="form-check-label"></label>
-        </div>
+    <div class="col-md-4">
+        <label asp-for="Producto.EstadoId" class="form-label">Estado (Activo o inactivo)</label>
+        <select asp-for="Producto.EstadoId" asp-items="Model.Estados" class="form-select">
+            <option value="">Seleccione estado</option>
+        </select>
+        <span asp-validation-for="Producto.EstadoId" class="text-danger small"></span>
     </div>
 </div>

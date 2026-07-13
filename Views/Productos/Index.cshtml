@@ -51,42 +51,42 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Productos)
-            {
-                <tr>
-                    <td>
-                        <img src="@item.ImagenUrl" alt="@item.Nombre"
-                             class="rounded" style="width:45px;height:45px;object-fit:cover;"
-                             onerror="this.src='/uploads/productos/placeholder.png'" />
-                    </td>
-                    <td>@item.Nombre</td>
-                    <td>@item.Categoria?.Nombre</td>
-                    <td class="text-end">@item.Precio.ToString("C")</td>
-                    <td class="text-center">@item.ImpuestoPorc%</td>
-                    <td class="text-center">@item.Stock</td>
-                    <td class="text-center">
-                        @if (item.Activo)
-                        {
-                            <span class="badge bg-success">Activo</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Inactivo</span>
-                        }
-                    </td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-                    </td>
-                </tr>
-            }
-            @if (!Model.Productos.Any())
-            {
-                <tr>
-                    <td colspan="8" class="text-center text-muted py-4">No se encontraron productos.</td>
-                </tr>
-            }
+                @foreach (var item in Model.Productos)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.Imagen" alt="@item.Nombre"
+                                 class="rounded" style="width:45px;height:45px;object-fit:cover;"
+                                 onerror="this.src='/uploads/productos/placeholder.png'" />
+                        </td>
+                        <td>@item.Nombre</td>
+                        <td>@item.Categoria?.Nombre</td>
+                        <td class="text-end">@item.Precio.ToString("C")</td>
+                        <td class="text-center">@item.ImpuestoPorc%</td>
+                        <td class="text-center @(item.Stock <= 1 ? "text-danger fw-bold" : "")">@item.Stock</td>
+                        <td class="text-center">
+                            @if (item.Estado?.Descripcion == "Activo")
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@(item.Estado?.Descripcion ?? "Inactivo")</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Productos.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">No se encontraron productos.</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
@@ -101,13 +101,13 @@
             @Html.PagedListPager(Model.Productos, page => Url.Action("Index", new
             {
                 page,
-                nombre     = Model.NombreFiltro,
-                categoriaId= Model.CategoriaFiltro
+                nombre = Model.NombreFiltro,
+                categoriaId = Model.CategoriaFiltro
             }), new X.PagedList.Mvc.Core.PagedListRenderOptions
             {
-                LiElementClasses      = new[] { "page-item" },
-                PageClasses           = new[] { "page-link" },
-                UlElementClasses      = new[] { "pagination pagination-sm mb-0" }
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" },
+                UlElementClasses = new[] { "pagination pagination-sm mb-0" }
             })
         </div>
     }

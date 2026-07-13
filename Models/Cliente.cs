@@ -2,15 +2,23 @@ namespace Pedidos360.Models;
 
 public partial class Cliente
 {
-    public int Id { get; set; }
+    public string Cedula { get; set; } = null!;
+
+    public int EstadoId { get; set; }
 
     public string Nombre { get; set; } = null!;
 
-    public string Cedula { get; set; } = null!;
+    public string ApellidoPaterno { get; set; } = null!;
 
-    public string Correo { get; set; } = null!;
+    public string? ApellidoMaterno { get; set; }
 
-    public string Telefono { get; set; } = null!;
+    public virtual Estado? Estado { get; set; }
 
-    public string Direccion { get; set; } = null!;
+    public virtual ICollection<CorreoCliente> Correos { get; set; } = [];
+
+    public virtual ICollection<TelefonoCliente> Telefonos { get; set; } = [];
+
+    public virtual ICollection<Direccion> Direcciones { get; set; } = [];
+
+    public virtual ICollection<Pedido> Pedidos { get; set; } = [];
 }

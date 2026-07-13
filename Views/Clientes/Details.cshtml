@@ -8,23 +8,38 @@
     <h1 class="h4 mb-0">Detalle Cliente</h1>
 </div>
 
-<div class="card border-0 shadow-sm" style="max-width:600px">
+<div class="card border-0 shadow-sm" style="max-width:650px">
     <div class="card-body">
         <dl class="row mb-0">
             <dt class="col-sm-4">Nombre</dt>
-            <dd class="col-sm-8">@Model.Nombre</dd>
-            <dt class="col-sm-4">Cédula / Jurídica</dt>
+            <dd class="col-sm-8">@Model.Nombre @Model.ApellidoPaterno @Model.ApellidoMaterno</dd>
+            <dt class="col-sm-4">Cédula fisica o Juridica</dt>
             <dd class="col-sm-8">@Model.Cedula</dd>
             <dt class="col-sm-4">Correo</dt>
-            <dd class="col-sm-8"><a href="mailto:@Model.Correo">@Model.Correo</a></dd>
+            <dd class="col-sm-8">
+                @foreach (var c in Model.Correos)
+                {
+                    <div><a href="mailto:@c.Correo">@c.Correo</a></div>
+                }
+            </dd>
             <dt class="col-sm-4">Teléfono</dt>
-            <dd class="col-sm-8">@Model.Telefono</dd>
+            <dd class="col-sm-8">
+                @foreach (var t in Model.Telefonos)
+                {
+                    <div>@t.Telefono</div>
+                }
+            </dd>
             <dt class="col-sm-4">Dirección</dt>
-            <dd class="col-sm-8">@Model.Direccion</dd>
+            <dd class="col-sm-8">
+                @foreach (var d in Model.Direcciones)
+                {
+                    <div>@d.Provincia?.NombreProvincia, @d.Canton?.NombreCanton, @d.Distrito?.NombreDistrito - @d.OtrasSenas</div>
+                }
+            </dd>
         </dl>
     </div>
     <div class="card-footer bg-transparent d-flex gap-2">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">Editar</a>
-        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Eliminar</a>
+        <a asp-action="Edit" asp-route-id="@Model.Cedula" class="btn btn-outline-secondary btn-sm">Editar</a>
+        <a asp-action="Delete" asp-route-id="@Model.Cedula" class="btn btn-outline-danger btn-sm">Eliminar</a>
     </div>
 </div>

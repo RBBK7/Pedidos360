@@ -16,12 +16,18 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
+        var estadoActivoId = await _context.Estados
+            .Where(e => e.Descripcion == "Activo")
+            .Select(e => e.Id)
+            .FirstOrDefaultAsync();
+
         var viewModel = new HomeDashboardViewModel
         {
             TotalCategorias  = await _context.Categorias.CountAsync(),
             TotalProductos   = await _context.Productos.CountAsync(),
             TotalClientes    = await _context.Clientes.CountAsync(),
-            ProductosActivos = await _context.Productos.CountAsync(p => p.Activo)
+            ProductosActivos = await _context.Productos.CountAsync(p => p.EstadoId == estadoActivoId),
+            TotalPedidos     = await _context.Pedidos.CountAsync(),
         };
 
         return View(viewModel);

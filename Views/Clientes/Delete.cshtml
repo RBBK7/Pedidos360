@@ -13,16 +13,16 @@
         <p class="text-danger fw-semibold">¿Está seguro de eliminar este cliente?</p>
         <dl class="row mb-0">
             <dt class="col-sm-4">Nombre</dt>
-            <dd class="col-sm-8">@Model.Nombre</dd>
+            <dd class="col-sm-8">@Model.Nombre @Model.ApellidoPaterno</dd>
             <dt class="col-sm-4">Cédula</dt>
             <dd class="col-sm-8">@Model.Cedula</dd>
             <dt class="col-sm-4">Correo</dt>
-            <dd class="col-sm-8">@Model.Correo</dd>
+            <dd class="col-sm-8">@Model.Correos.FirstOrDefault()?.Correo</dd>
         </dl>
     </div>
     <div class="card-footer bg-transparent d-flex gap-2">
         <form asp-action="Delete">
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Cedula" />
             <button type="submit" class="btn btn-danger btn-sm">Sí, eliminar</button>
         </form>
         <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Cancelar</a>

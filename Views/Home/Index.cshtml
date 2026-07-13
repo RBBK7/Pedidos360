@@ -49,11 +49,11 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="fs-1 text-secondary">🛒</div>
-                <div class="fs-2 fw-bold text-muted">—</div>
-                <div class="text-muted small">Pedidos (Hito 2)</div>
+                <div class="fs-2 fw-bold">@Model.TotalPedidos</div>
+                <div class="text-muted small">Pedidos</div>
             </div>
             <div class="card-footer bg-transparent border-0 text-center">
-                <span class="badge bg-secondary">hito2</span>
+                <a asp-controller="Pedidos" asp-action="Index" class="btn btn-sm btn-outline-secondary">Ver pedidos</a>
             </div>
         </div>
     </div>
@@ -134,7 +134,6 @@
                     <div class="accordion-body text-muted">
                         Con clientes y productos registrados, ya puedes generar pedidos.
                         Selecciona el cliente, agrega los productos y confirma el pedido.
-                        <span class="badge bg-warning text-dark ms-1">Hito2</span>
                     </div>
                 </div>
             </div>

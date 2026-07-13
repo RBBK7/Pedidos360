@@ -1,17 +1,35 @@
-@model Cliente
+@model ClienteFormViewModel
 
 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 <div class="row g-3">
-    <div class="col-md-8">
-        <label asp-for="Nombre" class="form-label"></label>
-        <input asp-for="Nombre" class="form-control" placeholder="Nombre completo o razón social" />
-        <span asp-validation-for="Nombre" class="text-danger small"></span>
+    <div class="col-md-6">
+        <label asp-for="Cliente.Cedula" class="form-label">Cédula fisica o juridica</label>
+        @if (Model.CedulaOriginal is not null)
+        {
+            <input asp-for="Cliente.Cedula" class="form-control" readonly />
+        }
+        else
+        {
+            <input asp-for="Cliente.Cedula" class="form-control" placeholder="1-0234-0567 o 3-101-123456" />
+        }
+        <span asp-validation-for="Cliente.Cedula" class="text-danger small"></span>
     </div>
-    <div class="col-md-4">
-        <label asp-for="Cedula" class="form-label"></label>
-        <input asp-for="Cedula" class="form-control" placeholder="1-0234-0567 o 3-101-123456" />
-        <span asp-validation-for="Cedula" class="text-danger small"></span>
+    <div class="col-md-6">
+        <label asp-for="Cliente.Nombre" class="form-label"></label>
+        <input asp-for="Cliente.Nombre" class="form-control" />
+        <span asp-validation-for="Cliente.Nombre" class="text-danger small"></span>
     </div>
+
+    <div class="col-md-6">
+        <label asp-for="Cliente.ApellidoPaterno" class="form-label"></label>
+        <input asp-for="Cliente.ApellidoPaterno" class="form-control" />
+        <span asp-validation-for="Cliente.ApellidoPaterno" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Cliente.ApellidoMaterno" class="form-label"></label>
+        <input asp-for="Cliente.ApellidoMaterno" class="form-control" />
+    </div>
+
     <div class="col-md-6">
         <label asp-for="Correo" class="form-label"></label>
         <input asp-for="Correo" class="form-control" type="email" placeholder="correo@empresa.cr" />
@@ -22,9 +40,54 @@
         <input asp-for="Telefono" class="form-control" placeholder="2222-3333" />
         <span asp-validation-for="Telefono" class="text-danger small"></span>
     </div>
+
+    <div class="col-md-4">
+        <label asp-for="ProvinciaId" class="form-label">Provincia</label>
+        <select asp-for="ProvinciaId" asp-items="Model.Provincias" class="form-select" id="provinciaSelect">
+            <option value="">-- Seleccione --</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="CantonId" class="form-label">Cantón</label>
+        <select asp-for="CantonId" asp-items="Model.Cantones" class="form-select" id="cantonSelect">
+            <option value="">-- Seleccione --</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DistritoId" class="form-label">Distrito</label>
+        <select asp-for="DistritoId" asp-items="Model.Distritos" class="form-select" id="distritoSelect">
+            <option value="">-- Seleccione --</option>
+        </select>
+    </div>
+
     <div class="col-12">
-        <label asp-for="Direccion" class="form-label"></label>
-        <input asp-for="Direccion" class="form-control" placeholder="Provincia, Cantón, Señas" />
-        <span asp-validation-for="Direccion" class="text-danger small"></span>
+        <label asp-for="OtrasSenas" class="form-label">Otras señas</label>
+        <input asp-for="OtrasSenas" class="form-control" placeholder="Del parque 200m norte..." />
     </div>
 </div>
+
+<script>
+    // Cascading dropdowns Provincia -Cantón -Distrito
+    document.getElementById('provinciaSelect').addEventListener('change', function () {
+        const provinciaId = this.value;
+        fetch(`/api/ubicacion/cantones?provinciaId=${provinciaId}`)
+            .then(r => r.json())
+            .then(data => {
+                const cantonSelect = document.getElementById('cantonSelect');
+                cantonSelect.innerHTML = '<option value="">-- Seleccione --</option>';
+                data.forEach(c => cantonSelect.add(new Option(c.nombre, c.id)));
+                document.getElementById('distritoSelect').innerHTML = '<option value="">-- Seleccione --</option>';
+            });
+    });
+
+    document.getElementById('cantonSelect').addEventListener('change', function () {
+        const cantonId = this.value;
+        fetch(`/api/ubicacion/distritos?cantonId=${cantonId}`)
+            .then(r => r.json())
+            .then(data => {
+                const distritoSelect = document.getElementById('distritoSelect');
+                distritoSelect.innerHTML = '<option value="">-- Seleccione --</option>';
+                data.forEach(d => distritoSelect.add(new Option(d.nombre, d.id)));
+            });
+    });
+</script>

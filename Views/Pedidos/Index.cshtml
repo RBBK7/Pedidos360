@@ -1,0 +1,134 @@
+@model PedidoIndexViewModel
+@{
+    ViewData["Title"] = "Pedidos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-1">Pedidos</h1>
+        <p class="text-muted mb-0">Historial de pedidos registrados</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Nuevo pedido</a>
+</div>
+
+@Html.AntiForgeryToken()
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th class="text-center" style="min-width:170px">Estado</th>
+                    <th class="text-end">Subtotal</th>
+                    <th class="text-end">Descuento</th>
+                    <th class="text-end">Impuesto</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Pedidos)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Cliente?.Nombre @item.Cliente?.ApellidoPaterno</td>
+                    <td>@item.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td class="text-center">
+                        <select class="form-select form-select-sm select-estado-pedido" data-pedido-id="@item.Id">
+                            @foreach (var estado in Model.EstadosPedido)
+                            {
+                                if (estado.Value == item.EstadoId.ToString())
+                                {
+                                    <option value="@estado.Value" selected="selected">@estado.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@estado.Value">@estado.Text</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td class="text-end">@item.Subtotal.ToString("C")</td>
+                    <td class="text-end">@item.Descuento.ToString("C")</td>
+                    <td class="text-end">@item.Impuesto.ToString("C")</td>
+                    <td class="text-end fw-semibold">@item.Total.ToString("C")</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="ExportarPdf" asp-route-id="@item.Id">PDF</a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Pedidos.Any())
+            {
+                <tr>
+                    <td colspan="9" class="text-center text-muted py-4">Todavía no hay pedidos registrados.</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.Pedidos.PageCount > 1)
+    {
+        <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                Mostrando @Model.Pedidos.FirstItemOnPage–@Model.Pedidos.LastItemOnPage
+                de @Model.Pedidos.TotalItemCount pedidos
+            </small>
+            @Html.PagedListPager(Model.Pedidos, page => Url.Action("Index", new { page }),
+                new X.PagedList.Mvc.Core.PagedListRenderOptions
+            {
+                LiElementClasses = new[] { "page-item" },
+                PageClasses      = new[] { "page-link" },
+                UlElementClasses = new[] { "pagination pagination-sm mb-0" }
+            })
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            document.querySelectorAll('.select-estado-pedido').forEach(function (select) {
+                select.dataset.valorAnterior = select.value;
+
+                select.addEventListener('change', function () {
+                    const selectEl = this;
+                    const pedidoId = selectEl.dataset.pedidoId;
+                    const estadoId = selectEl.value;
+                    const valorAnterior = selectEl.dataset.valorAnterior;
+
+                    selectEl.disabled = true;
+
+                    fetch('@Url.Action("CambiarEstado")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': token
+                        },
+                        body: `id=${encodeURIComponent(pedidoId)}&estadoId=${encodeURIComponent(estadoId)}`
+                    })
+                    .then(function (r) {
+                        if (!r.ok) throw new Error('No se pudo actualizar el estado del pedido');
+                        return r.json();
+                    })
+                    .then(function () {
+                        selectEl.dataset.valorAnterior = estadoId;
+                    })
+                    .catch(function (err) {
+                        alert(err.message || 'Ocurrió un error al actualizar el estado.');
+                        selectEl.value = valorAnterior;
+                    })
+                    .finally(function () {
+                        selectEl.disabled = false;
+                    });
+                });
+            });
+        });
+    </script>
+}
