@@ -1,15 +1,42 @@
-@model ErrorViewModel
+@model Pedidos360.Models.ErrorViewModel
+
+
 @{
-    ViewData["Title"] = "Error";
+
+    ViewData["Title"] = "Error 500";
+
 }
 
-<div class="text-center py-5">
-    <h1 class="display-1 text-danger">⚠</h1>
-    <h2>Ocurrió un error inesperado</h2>
-    <p class="text-muted">Lo sentimos, algo salió mal. Por favor intente de nuevo.</p>
-    @if (Model.ShowRequestId)
+
+<div class="text-center">
+
+    <h1 class="text-danger">Error 500</h1>
+
+
+    <p>
+
+        Ha ocurrido un error interno en el servidor.
+
+    </p>
+
+
+    <p>
+
+        Intente nuevamente más tarde.
+
+    </p>
+
+
+    @if (Model?.RequestId != null)
+
     {
-        <p class="small text-muted">Request ID: <code>@Model.RequestId</code></p>
+
+        <p>
+
+            <strong>ID de solicitud:</strong> @Model.RequestId
+
+        </p>
+
     }
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Volver al inicio</a>
+
 </div>
