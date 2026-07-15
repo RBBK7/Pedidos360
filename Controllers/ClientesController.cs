@@ -187,7 +187,6 @@ public class ClientesController : Controller
         TempData["SuccessMessage"] = $"Cliente \"{clienteDb.Nombre}\" actualizado correctamente";
         return RedirectToAction(nameof(Index));
     }
-
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string? id)
     {
@@ -195,6 +194,9 @@ public class ClientesController : Controller
 
         var cliente = await _context.Clientes
             .Include(c => c.Correos)
+            .Include(c => c.Telefonos)
+            .Include(c => c.Direcciones)
+            .Include(c => c.Pedidos)
             .FirstOrDefaultAsync(c => c.Cedula == id);
 
         if (cliente is null) return NotFound();
@@ -207,13 +209,29 @@ public class ClientesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(string id)
     {
-        var cliente = await _context.Clientes.FindAsync(id);
-        if (cliente is not null)
+        var cliente = await _context.Clientes
+            .Include(c => c.Correos)
+            .Include(c => c.Telefonos)
+            .Include(c => c.Direcciones)
+            .Include(c => c.Pedidos)
+            .FirstOrDefaultAsync(c => c.Cedula == id);
+
+        if (cliente is null) return RedirectToAction(nameof(Index));
+
+        if (cliente.Pedidos.Count > 0)
         {
-            _context.Clientes.Remove(cliente);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = $"Cliente \"{cliente.Nombre}\" eliminado correctamente";
+            TempData["ErrorMessage"] =
+                $"No se puede eliminar a \"{cliente.Nombre}\" porque tiene pedidos registrados.";
+            return RedirectToAction(nameof(Index));
         }
+
+        _context.CorreosClientes.RemoveRange(cliente.Correos);
+        _context.TelefonosClientes.RemoveRange(cliente.Telefonos);
+        _context.Direcciones.RemoveRange(cliente.Direcciones);
+        _context.Clientes.Remove(cliente);
+
+        await _context.SaveChangesAsync();
+        TempData["SuccessMessage"] = $"Cliente \"{cliente.Nombre}\" eliminado correctamente";
         return RedirectToAction(nameof(Index));
     }
 
