@@ -8,7 +8,10 @@
         <h1 class="h3 mb-1">Pedidos</h1>
         <p class="text-muted mb-0">Historial de pedidos registrados</p>
     </div>
-    <a class="btn btn-primary" asp-action="Create">Nuevo pedido</a>
+    @if (User.IsInRole("Admin") || User.IsInRole("Ventas"))
+    {
+        <a class="btn btn-primary" asp-action="Create">Nuevo pedido</a>
+    }
 </div>
 
 @Html.AntiForgeryToken()
@@ -30,43 +33,53 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Pedidos)
-            {
-                <tr>
-                    <td>@item.Id</td>
-                    <td>@item.Cliente?.Nombre @item.Cliente?.ApellidoPaterno</td>
-                    <td>@item.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td class="text-center">
-                        <select class="form-select form-select-sm select-estado-pedido" data-pedido-id="@item.Id">
-                            @foreach (var estado in Model.EstadosPedido)
+                @foreach (var item in Model.Pedidos)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Cliente?.Nombre @item.Cliente?.ApellidoPaterno</td>
+                        <td>@item.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-center">
+                            @if (User.IsInRole("Admin"))
                             {
-                                if (estado.Value == item.EstadoId.ToString())
-                                {
-                                    <option value="@estado.Value" selected="selected">@estado.Text</option>
-                                }
-                                else
-                                {
-                                    <option value="@estado.Value">@estado.Text</option>
-                                }
+                                <select class="form-select form-select-sm select-estado-pedido" data-pedido-id="@item.Id">
+                                    @foreach (var estado in Model.EstadosPedido)
+                                    {
+                                        if (estado.Value == item.EstadoId.ToString())
+                                        {
+                                            <option value="@estado.Value" selected="selected">@estado.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@estado.Value">@estado.Text</option>
+                                        }
+                                    }
+                                </select>
                             }
-                        </select>
-                    </td>
-                    <td class="text-end">@item.Subtotal.ToString("C")</td>
-                    <td class="text-end">@item.Descuento.ToString("C")</td>
-                    <td class="text-end">@item.Impuesto.ToString("C")</td>
-                    <td class="text-end fw-semibold">@item.Total.ToString("C")</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                        <a class="btn btn-sm btn-outline-secondary" asp-action="ExportarPdf" asp-route-id="@item.Id">PDF</a>
-                    </td>
-                </tr>
-            }
-            @if (!Model.Pedidos.Any())
-            {
-                <tr>
-                    <td colspan="9" class="text-center text-muted py-4">Todavía no hay pedidos registrados.</td>
-                </tr>
-            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@item.Estado?.Descripcion</span>
+                            }
+                        </td>
+                        <td class="text-end">@item.Subtotal.ToString("C")</td>
+                        <td class="text-end">@item.Descuento.ToString("C")</td>
+                        <td class="text-end">@item.Impuesto.ToString("C")</td>
+                        <td class="text-end fw-semibold">@item.Total.ToString("C")</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-sm btn-outline-secondary" asp-action="ExportarPdf" asp-route-id="@item.Id">PDF</a>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Pedidos.Any())
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">Todavía no hay pedidos registrados.</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
@@ -80,11 +93,11 @@
             </small>
             @Html.PagedListPager(Model.Pedidos, page => Url.Action("Index", new { page }),
                 new X.PagedList.Mvc.Core.PagedListRenderOptions
-            {
-                LiElementClasses = new[] { "page-item" },
-                PageClasses      = new[] { "page-link" },
-                UlElementClasses = new[] { "pagination pagination-sm mb-0" }
-            })
+                {
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    UlElementClasses = new[] { "pagination pagination-sm mb-0" }
+                })
         </div>
     }
 </div>
@@ -92,7 +105,9 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (!tokenInput) return;
+            const token = tokenInput.value;
 
             document.querySelectorAll('.select-estado-pedido').forEach(function (select) {
                 select.dataset.valorAnterior = select.value;

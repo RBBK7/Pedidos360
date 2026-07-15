@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using X.PagedList.Extensions;
 
 namespace Pedidos360.Controllers;
 
+[Authorize]
 public class PedidosController : Controller
 {
     private readonly Pedidos360Context _context;
@@ -20,6 +22,8 @@ public class PedidosController : Controller
     }
 
     // GET: /Pedidos
+
+    [Authorize(Roles = "Admin,Ventas,Operaciones")]
     public async Task<IActionResult> Index(int page = 1)
     {
         var lista = await _context.Pedidos
@@ -38,6 +42,7 @@ public class PedidosController : Controller
     }
 
     // GET: /Pedidos/Details/
+    [Authorize(Roles = "Admin,Ventas,Operaciones")]
     public async Task<IActionResult> Details(int? id)
     {
         if (id is null) return NotFound();
@@ -57,6 +62,8 @@ public class PedidosController : Controller
 
     // POST: /Pedidos/CambiarEstado
     // Actualiza el estado de un pedido desde el menu desplegable 
+
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CambiarEstado(int id, int estadoId)
@@ -76,6 +83,7 @@ public class PedidosController : Controller
     }
 
     // GET: /Pedidos/ExportarPdf/
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> ExportarPdf(int id)
     {
         var pedido = await _context.Pedidos
@@ -91,6 +99,7 @@ public class PedidosController : Controller
     }
 
     // GET: /Pedidos/Create
+    [Authorize(Roles = "Admin,Ventas")]
     public async Task<IActionResult> Create()
     {
         var viewModel = new PedidoCreateViewModel
@@ -110,6 +119,7 @@ public class PedidosController : Controller
 
     // GET: /Pedidos/BuscarProductos
     // Autosuggest AJAX de productos activos por nombre 
+    [Authorize(Roles = "Admin,Ventas,Operaciones")]
     [HttpGet]
     public async Task<IActionResult> BuscarProductos(string? q)
     {
@@ -136,6 +146,7 @@ public class PedidosController : Controller
 
     // POST: /Pedidos/Calcular
     // Recalcula subtotal,descuento,impuesto y total en vivo, sin persistir nada
+    [Authorize(Roles = "Admin,Ventas")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Calcular([FromBody] List<LineaCalculoDto>? lineas)
@@ -146,6 +157,7 @@ public class PedidosController : Controller
 
     // POST: /Pedidos/Confirmar
     // Valida stock, crea el pedido + detalle y descuenta el inventario
+    [Authorize(Roles = "Admin,Ventas")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Confirmar([FromBody] ConfirmarPedidoDto? data)

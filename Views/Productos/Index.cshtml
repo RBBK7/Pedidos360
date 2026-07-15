@@ -8,9 +8,12 @@
         <h1 class="h3 mb-1">Productos</h1>
         <p class="text-muted mb-0">Catálogo de productos con filtros y paginación</p>
     </div>
-    <a class="btn btn-primary" asp-action="Create">Nuevo producto</a>
-</div>
 
+    @if (User.IsInRole("Admin"))
+    {
+        <a class="btn btn-primary" asp-action="Create">Nuevo producto</a>
+    }
+</div>
 
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body py-2">
@@ -74,11 +77,14 @@
                                 <span class="badge bg-secondary">@(item.Estado?.Descripcion ?? "Inactivo")</span>
                             }
                         </td>
-                        <td class="text-end">
-                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-                        </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Ver</a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                                }
+                            </td>
                     </tr>
                 }
                 @if (!Model.Productos.Any())

@@ -51,7 +51,10 @@
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Cedula">Ver</a>
                             <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Cedula">Editar</a>
-                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Cedula">Eliminar</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Cedula">Eliminar</a>
+                            }
                         </td>
                     </tr>
                 }
