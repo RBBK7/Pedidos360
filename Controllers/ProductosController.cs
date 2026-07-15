@@ -164,6 +164,8 @@ public class ProductosController : Controller
 
         if (producto is null) return NotFound();
 
+        ViewBag.TienePedidos = await _context.DetallesPedido.AnyAsync(d => d.ProductoId == id);
+
         return View(producto);
     }
 
@@ -174,12 +176,28 @@ public class ProductosController : Controller
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var producto = await _context.Productos.FindAsync(id);
-        if (producto is not null)
+        if (producto is null)
+            return RedirectToAction(nameof(Index));
+
+        var tienePedidos = await _context.DetallesPedido.AnyAsync(d => d.ProductoId == id);
+        if (tienePedidos)
+        {
+            TempData["ErrorMessage"] = $"No se puede eliminar \"{producto.Nombre}\" porque ya esta incluido en uno o mas pedidos. Puedes marcarlo como Inactivo en su lugar";
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+
+        try
         {
             _context.Productos.Remove(producto);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = $"Producto \"{producto.Nombre}\" eliminado correctamente.";
+            TempData["SuccessMessage"] = $"Producto \"{producto.Nombre}\" eliminado";
         }
+        catch (DbUpdateException)
+        {
+            TempData["ErrorMessage"] = $"No se pudo eliminar \"{producto.Nombre}\" porque tiene registros relacionados";
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+
         return RedirectToAction(nameof(Index));
     }
 

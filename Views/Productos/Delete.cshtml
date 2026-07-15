@@ -10,7 +10,18 @@
 
 <div class="card border-danger shadow-sm" style="max-width:550px">
     <div class="card-body">
-        <p class="text-danger fw-semibold">¿Está seguro de eliminar este producto?</p>
+        @if (ViewBag.TienePedidos == true)
+        {
+            <div class="alert alert-warning">
+                Este producto ya esta incluido en uno o mas pedidos y no se puede eliminar
+                Si ya no esta disponible, marquelo como <strong>Inactivo</strong> desde
+                <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a> en vez de eliminarlo
+            </div>
+        }
+        else
+        {
+            <p class="text-danger fw-semibold">¿Confirmas que quieres eliminar este producto?</p>
+        }
         <dl class="row mb-0">
             <dt class="col-sm-4">Nombre</dt>
             <dd class="col-sm-8">@Model.Nombre</dd>
@@ -25,7 +36,7 @@
     <div class="card-footer bg-transparent d-flex gap-2">
         <form asp-action="Delete">
             <input type="hidden" asp-for="Id" />
-            <button type="submit" class="btn btn-danger btn-sm">Sí, eliminar</button>
+            <button type="submit" class="btn btn-danger btn-sm" disabled="@(ViewBag.TienePedidos == true)">Sí, eliminar</button>
         </form>
         <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Cancelar</a>
     </div>
