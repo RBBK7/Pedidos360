@@ -62,6 +62,14 @@ La aplicacion queda disponible en:
 ---
 
 ## 6. Usuarios de prueba
+operaciones@pedidos360.com
+Opera123*
+
+ventas@pedidos360.com
+Ventas123*
+
+admin@pedidos360.com
+Admin123*
 
 
 ---
