@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Pedidos360.Models;
+using System.ComponentModel.DataAnnotations;
 using X.PagedList;
 
 namespace Pedidos360.ViewModels;
@@ -35,12 +36,24 @@ public class ClienteFormViewModel
 
     public Cliente Cliente { get; set; } = new();
 
+    [Required(ErrorMessage = "El correo es obligatorio")]
+    [EmailAddress(ErrorMessage = "El correo no es valido")]
     public string Correo { get; set; } = null!;
+
+    [Required(ErrorMessage = "El telefono es obligatorio")]
+    [RegularExpression(@"^\d{8}$", ErrorMessage = "El telefono debe tener 8 dígitos")]
     public string Telefono { get; set; } = null!;
 
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una provincia")]
     public int ProvinciaId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un cantón")]
     public int CantonId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un distrito")]
     public int DistritoId { get; set; }
+
+    [StringLength(200, ErrorMessage = "Máximo 200 caracteres")]
     public string? OtrasSenas { get; set; }
 
     public List<SelectListItem> Provincias { get; set; } = [];
@@ -89,11 +102,16 @@ public class ProductoBusquedaDto
     public int Stock { get; set; }
 }
 
-// Linea enviada desde el carrito hacia el servidor para calculary confirmar
+// Linea enviada desde el carrito hacia el servidor para calcular y confirmar
 public class LineaCalculoDto
 {
+    [Range(1, int.MaxValue, ErrorMessage = "Producto invalido")]
     public int ProductoId { get; set; }
+
+    [Range(1, 1000, ErrorMessage = "La cantidad debe estar entre 1 y 1000")]
     public int Cantidad { get; set; }
+
+    [Range(0, 100, ErrorMessage = "El descuento debe estar entre 0% y 100%")]
     public decimal DescuentoPorc { get; set; }
 }
 
