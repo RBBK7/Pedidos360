@@ -53,7 +53,9 @@ public class ClienteFormViewModel
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un distrito")]
     public int DistritoId { get; set; }
 
-    [StringLength(200, ErrorMessage = "Máximo 200 caracteres")]
+    [Required(ErrorMessage = "Las otras señas son requeridas.")]
+    [StringLength(200, ErrorMessage = "Máximo 200 caracteres.")]
+    [Display(Name = "Otras señas")]
     public string? OtrasSenas { get; set; }
 
     public List<SelectListItem> Provincias { get; set; } = [];
