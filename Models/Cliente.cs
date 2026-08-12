@@ -6,7 +6,7 @@ public partial class Cliente
 {
     [Required(ErrorMessage = "La cédula es obligatoria")]
     [StringLength(20, MinimumLength = 9, ErrorMessage = "La cedula debe tener entre 9 y 20 caracteres")]
-    [RegularExpression(@"^\d{9,12}$", ErrorMessage = "La cedula solo debe contener numeros entre 9 y 20 caracteres")]
+    [RegularExpression(@"^\d{9,12}$", ErrorMessage = "La cedula solo debe contener numeros, entre 9 y 20 caracteres")]
     public string Cedula { get; set; } = null!;
 
     public int EstadoId { get; set; }
@@ -19,6 +19,7 @@ public partial class Cliente
     [StringLength(80, ErrorMessage = "Maximo 80 caracteres")]
     public string ApellidoPaterno { get; set; } = null!;
 
+    [Required(ErrorMessage = "El Segundo Apellido es obligatorio")]
     [StringLength(80, ErrorMessage = "Maximo 80 caracteres")]
     public string? ApellidoMaterno { get; set; }
 

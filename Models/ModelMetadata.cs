@@ -79,6 +79,12 @@ public class ClienteMetadata
     [Display(Name = "Correo")]
     public string Correo { get; set; } = string.Empty;
 
+
+    [Required(ErrorMessage = "El apellido materno es requerido.")]
+    [StringLength(80, ErrorMessage = "Máximo 80 caracteres.")]
+    [Display(Name = "Apellido materno")]
+    public string ApellidoMaterno { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "El teléfono es requerido.")]
     [StringLength(20, ErrorMessage = "Máximo 20 caracteres.")]
     [Display(Name = "Teléfono")]
