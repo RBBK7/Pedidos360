@@ -12,7 +12,7 @@ clientes y pedidos, con exportacion de cada pedido a PDF.
 | [.NET SDK](https://dotnet.microsoft.com/download) | 9.0 |
 | SQL Server (Express, Developer o LocalDB) | 2019+ |
 | Visual Studio 2022 (17.12+) **o** VS Code + extension C# | — |
-| EF Core CLI (solo si vas a usar `dotnet ef`) | `dotnet tool install --global dotnet-ef` |
+
 
 ---
 
